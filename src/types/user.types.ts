@@ -10,3 +10,9 @@ type UserRequest = {
   email: string;
   username: string;
 };
+
+type RegisterResponse = {
+  statusCode: number;
+  message: string;
+  data: null;
+};

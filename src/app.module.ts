@@ -5,6 +5,7 @@ import { UserModule } from './user/user.module';
 import * as Joi from 'joi';
 import { LoggerMiddleware } from './middleware/logger.middleware';
 import { CacheModule } from '@nestjs/cache-manager';
+import { PostModule } from './post/post.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { CacheModule } from '@nestjs/cache-manager';
     CacheModule.register({ isGlobal: true, ttl: 1000 * 60 * 60 * 2, max: 10 }),
     PrismaModule,
     UserModule,
+    PostModule,
   ],
   controllers: [],
   providers: [],
