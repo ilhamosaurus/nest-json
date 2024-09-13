@@ -17,6 +17,7 @@ model User {
   id         Int      @id @default(autoincrement())
   username   String
   email      String   @unique
+  password   String
   created_at DateTime @default(now())
   update_at  DateTime @updatedAt()
   Post       Post[]
