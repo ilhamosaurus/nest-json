@@ -5,6 +5,7 @@ This is a Application Programmed Interface (API) built in **TypeScript**, **Nest
 ## Features
 
 - **Documention page**: Can be seen in the browser at `http://<host>:<port>/api-doc`.
+- **Video Demo**: accessed at `https://drive.google.com/drive/folders/1oaTQZmUiJVxZMf4_h5-vK39AdnTyZkxp?usp=drive_link`
 
 ## Installation
 

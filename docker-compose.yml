@@ -6,6 +6,7 @@ services:
       dockerfile: Dockerfile
     env_file:
       - .env
+    restart: on-failure
     environment:
       - DATABASE_URL=postgresql://admin:qwerty@postgres:5432/nest_json?schema=public
       - PORT=6754
