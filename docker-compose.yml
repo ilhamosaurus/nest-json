@@ -7,7 +7,7 @@ services:
     env_file:
       - .env
     environment:
-      - DATABASE_URL="postgresql://admin:qwerty@postgres:5432/nest_json?schema=public"
+      - DATABASE_URL=postgresql://admin:qwerty@postgres:5432/nest_json?schema=public
       - PORT=6754
       - SECRET=supersecret
     depends_on:
