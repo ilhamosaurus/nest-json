@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 
@@ -31,7 +31,7 @@ export class PostService {
         data: {
           ...createPostDto,
           user_id: user.id,
-          id: response.data.id,
+          placeholder_id: response.data.id,
         },
       });
 
@@ -80,25 +80,46 @@ export class PostService {
 
   async findOne(id: number) {
     try {
-      const response = await axios.get(
-        `https://jsonplaceholder.typicode.com/posts/${id}`,
-      );
+      let result;
+      result = await this.cacheManager.get(`post-${id}`);
+      if (!result) {
+        const response = await axios.get(
+          `https://jsonplaceholder.typicode.com/posts/${id}`,
+        );
+
+        await this.cacheManager.set(
+          `post-${id}`,
+          response.data,
+          1000 * 60 * 15,
+        );
+        result = response.data;
+      }
       const dbPosts = await this.prisma.post.findUnique({
         where: {
           id,
         },
       });
 
+      if (!result && !dbPosts) {
+        throw new NotFoundException('Post not found');
+      }
+
       return {
         statusCode: 200,
         message: 'Post fetched successfully',
         data: {
-          placeholder_post: response.data,
+          placeholder_post: result,
           db_post: dbPosts,
         },
       };
     } catch (error) {
-      throw new InternalServerErrorException(`Error fetching post: ${error}`);
+      if (error instanceof NotFoundException) {
+        throw error;
+      } else if (error instanceof AxiosError && error.response.status === 404) {
+        throw new NotFoundException('Post not found');
+      } else {
+        throw new InternalServerErrorException(`Error fetching post: ${error}`);
+      }
     }
   }
 

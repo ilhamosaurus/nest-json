@@ -4,12 +4,15 @@ import { LoginDto, RegisterDto } from './dto';
 import { JwtGuard } from './guard';
 import { CurrentUser } from 'src/decorator/current-user.decorator';
 import {
+  ApiBadRequestResponse,
   ApiBearerAuth,
+  ApiBody,
   ApiCreatedResponse,
   ApiForbiddenResponse,
   ApiInternalServerErrorResponse,
   ApiOkResponse,
   ApiTags,
+  ApiUnauthorizedResponse,
   ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 
@@ -18,6 +21,7 @@ import {
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  @ApiBody({ type: RegisterDto })
   @ApiCreatedResponse({
     example: {
       statusCode: 201,
@@ -25,18 +29,22 @@ export class UserController {
       data: null,
     },
   })
+  @ApiBadRequestResponse({
+    example: {
+      statusCode: 400,
+      message: 'Body is not valid',
+    },
+  })
   @ApiUnprocessableEntityResponse({
     example: {
       statusCode: 422,
       message: 'User already exists',
-      data: null,
     },
   })
   @ApiInternalServerErrorResponse({
     example: {
       statusCode: 500,
       message: 'Error creating user',
-      data: null,
     },
   })
   @Post('register')
@@ -44,11 +52,18 @@ export class UserController {
     return this.userService.register(dto);
   }
 
+  @ApiBody({ type: LoginDto })
   @ApiCreatedResponse({
     example: {
       statusCode: 201,
       message: 'User created successfully, please login',
       access_token: 'token',
+    },
+  })
+  @ApiBadRequestResponse({
+    example: {
+      statusCode: 400,
+      message: 'Body is not valid',
     },
   })
   @ApiForbiddenResponse({
@@ -79,6 +94,12 @@ export class UserController {
         email: '7cZJt@example.com',
         username: 'test',
       },
+    },
+  })
+  @ApiUnauthorizedResponse({
+    example: {
+      statusCode: 401,
+      message: 'Malformed token',
     },
   })
   @ApiInternalServerErrorResponse({
